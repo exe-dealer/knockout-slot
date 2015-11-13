@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="http://highlightjs.org/static/highlight.pack.js" charset="utf-8"></script>
+  <script src="http://knockoutjs.com/downloads/knockout-3.3.0.debug.js" charset="utf-8"></script>
+  <script src="knockout-slot.js" charset="utf-8"></script>
+
+  <style>
+    html {
+      font-family: sans-serif;
+    }
+
+    pre {
+      margin: 2em;
+    }
+
+    pre code .hljs-keyword,
+    pre code .hljs-title {
+      font-weight: bold;
+    }
+
+    pre code .hljs-string,
+    pre code .hljs-value {
+      color: #D24700;
+    }
+
+    pre code .hljs-comment {
+        color: #AAA;
+    }
+  </style>
+  <script>
+  var escape = document.createElement('textarea');
+  function escapeHtml(html) {
+    escape.textContent = html;
+    return escape.innerHTML;
+  }
+
+  function writeCode(selector) {
+    document.write('<pre><code class="html">  ' + escapeHtml(document.querySelector(selector).outerHTML) + '</code></pre>');
+  }
+  </script>
+</head>
+<body>
+
+
+  <h1>Knockout 'slot' binding</h1>
+
+  <h2>Named slots</h2>
+
+  <style>
+    .example1 {
+      display: block;
+      max-width: 600px;
+    }
+
+    .example1__nav,
+    .example1__content {
+      padding: 1em;
+    }
+
+    .example1__nav-item {
+      display: block;
+    }
+  </style>
+
+  <x-splitpanel class="example1">
+    <nav class="example1__nav" slot="left" data-bind="foreach: items">
+      <a class="example1__nav-item"
+         data-bind="text: name, click: $parent.selected"
+         href="#"></a>
+    </nav>
+    <div class="example1__content" slot="right">
+      <span data-bind="text: ko.unwrap(selected) &amp;&amp;
+                             ko.unwrap(selected).content"></span>
+    </div>
+  </x-splitpanel>
+
+
+
+  <style>
+    .splitpanel {
+      display: flex;
+    }
+
+    .splitpanel__left {
+      flex: 1;
+    }
+
+    .splitpanel__right {
+      flex: 2;
+    }
+
+    .splitpanel__splitter {
+      align-self: center;
+      margin: 0 -.2em;
+      cursor: ew-resize;
+    }
+
+    .splitpanel__left,
+    .splitpanel__right {
+      border: thin solid #888;
+    }
+  </style>
+
+  <script type="text/html" id="x-splitpanel-template">
+    <div class="splitpanel">
+      <div class="splitpanel__left" data-bind="slot: 'left'"></div>
+      <div class="splitpanel__splitter">⋮</div>
+      <div class="splitpanel__right" data-bind="slot: 'right'"></div>
+    </div>
+  </script>
+
+  <script>writeCode('.example1');</script>
+  <script>writeCode('#x-splitpanel-template');</script>
+
+  <script>
+  ko.components.register('x-splitpanel', {
+    template: { element: 'x-splitpanel-template' },
+  });
+
+  ko.applyBindings({
+    selected: ko.observable(null),
+    items: [
+      { name: 'foo', content: 'foo content' },
+      { name: 'bar', content: 'bar content' },
+      { name: 'buz', content: 'buz content' }
+    ]
+  }, document.getElementsByName('example1')[0]);
+  </script>
+
+  <script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
